@@ -101,7 +101,7 @@ namespace MP3Player.Core
             if (Path.GetExtension(filePath).ToLower() != ".mp3")
                 throw new ArgumentException("Fisierul nu este in format MP3.");
 
-            // Citim tag-urile ID3 si durata
+            // Valorile default (Fallback)
             string title = Path.GetFileNameWithoutExtension(filePath);
             string artist = "Necunoscut";
             string album = "Necunoscut";
@@ -109,22 +109,41 @@ namespace MP3Player.Core
 
             try
             {
+                // 1. Citim durata folosind NAudio
                 using (var reader = new AudioFileReader(filePath))
                 {
                     duration = reader.TotalTime.ToString(@"mm\:ss");
                 }
 
-                // Citire tag-uri ID3 cu TagLib (optional - daca e instalat)
-                // var tagFile = TagLib.File.Create(filePath);
-                // title  = tagFile.Tag.Title  ?? title;
-                // artist = tagFile.Tag.FirstPerformer ?? artist;
-                // album  = tagFile.Tag.Album  ?? album;
-            }
-            catch { /* Continuam cu valorile default daca citirea esueaza */ }
+                // 2. Extragem metadatele ID3 folosind TagLib#
+                using (var tagFile = TagLib.File.Create(filePath))
+                {
+                    // Folosim operatorul ?? pentru a păstra numele fișierului dacă titlul din ID3 e gol
+                    if (!string.IsNullOrWhiteSpace(tagFile.Tag.Title))
+                        title = tagFile.Tag.Title;
 
+                    // FirstPerformer extrage primul artist găsit în listă
+                    if (!string.IsNullOrWhiteSpace(tagFile.Tag.FirstPerformer))
+                        artist = tagFile.Tag.FirstPerformer;
+
+                    if (!string.IsNullOrWhiteSpace(tagFile.Tag.Album))
+                        album = tagFile.Tag.Album;
+                }
+            }
+            catch
+            {
+                // Dacă citirea tag-urilor eșuează (fișier corupt/blocat), 
+                // funcția continuă cu valorile default setate mai sus.
+            }
+
+            // Creăm obiectul Song cu datele extrase
             var song = new Song(filePath, title, artist, album, duration);
+
             _activePlaylist.AddSong(song);
+
+            // Notificăm UI-ul că playlist-ul s-a schimbat
             PlaylistChanged?.Invoke(this, EventArgs.Empty);
+
             return song;
         }
 

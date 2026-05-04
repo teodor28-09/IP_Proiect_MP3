@@ -47,6 +47,7 @@ namespace Proiect_IP_Barbati
         // ── Initializare controale ────────────────────────────────
         private void SetupControls()
         {
+
             listViewSongs.HeaderStyle = ColumnHeaderStyle.Nonclickable; // Sau setări de culori dacă e DataGridView
             listViewSongs.FullRowSelect = true;
             listViewSongs.OwnerDraw = false;
@@ -55,9 +56,12 @@ namespace Proiect_IP_Barbati
             menuStrip.BackColor = Color.FromArgb(25, 20, 20);
             menuStrip.ForeColor = Color.White;
             // ListView melodii
+            listViewSongs.GridLines = false; 
+            listViewSongs.BackColor = Color.FromArgb(25, 20, 20);
+            listViewSongs.BorderStyle = BorderStyle.None;
+
             listViewSongs.View = View.Details;
             listViewSongs.FullRowSelect = true;
-            listViewSongs.GridLines = true;
             listViewSongs.Columns.Add("#", 35);
             listViewSongs.Columns.Add("Titlu", 180);
             listViewSongs.Columns.Add("Artist", 120);
@@ -157,7 +161,7 @@ namespace Proiect_IP_Barbati
                     foreach (string file in files)
                     {
                         if (Path.GetExtension(file).ToLower() == ".mp3")
-                            AddSongToUI(_controller.PlaylistManager.AddSong(file));
+                            _controller.PlaylistManager.AddSong(file);
                     }
                 }
                 catch (Exception ex)
@@ -266,6 +270,32 @@ namespace Proiect_IP_Barbati
         }
 
         // ── Refresh lista melodii ─────────────────────────────────
+
+        private void AddSongToUI(Song song)
+        {
+            if (song == null) return;
+
+            int index = listViewSongs.Items.Count + 1;
+            var item = new ListViewItem(index.ToString());
+            item.SubItems.Add(song.Title);
+            item.SubItems.Add(song.Artist ?? "Necunoscut");
+            item.SubItems.Add(song.Duration);
+
+            // Setăm culorile explicit pe rând
+            item.BackColor = Color.FromArgb(25, 20, 20);
+            item.ForeColor = Color.White;
+            item.UseItemStyleForSubItems = true;
+
+            // Forțăm fiecare sub-element să aibă aceeași culoare (uneori UseItemStyle e ignorat)
+            foreach (ListViewItem.ListViewSubItem sub in item.SubItems)
+            {
+                sub.BackColor = Color.FromArgb(25, 20, 20);
+                sub.ForeColor = Color.White;
+            }
+
+            listViewSongs.Items.Add(item);
+        }
+
         private void RefreshSongList()
         {
             listViewSongs.Items.Clear();
@@ -277,30 +307,16 @@ namespace Proiect_IP_Barbati
                 Song song = playlist.GetSong(i);
                 var item = new ListViewItem((i + 1).ToString());
                 item.SubItems.Add(song.Title);
-                item.SubItems.Add(song.Artist);
+                item.SubItems.Add(song.Artist ?? "Necunoscut");
                 item.SubItems.Add(song.Duration);
+
+                // stilizare
+                item.BackColor = Color.FromArgb(25, 20, 20);
+                item.ForeColor = Color.White;
+                item.UseItemStyleForSubItems = true;
+
                 listViewSongs.Items.Add(item);
             }
-        }
-
-        private void AddSongToUI(Song song)
-        {
-            if (song == null) return;
-            int index = listViewSongs.Items.Count + 1;
-            var item = new ListViewItem(index.ToString());
-            item.SubItems.Add(song.Title);
-            item.SubItems.Add(song.Artist);
-            item.SubItems.Add(song.Duration);
-            listViewSongs.Items.Add(item);
-        }
-
-        private void RefreshPlaylistBox()
-        {
-            listBoxPlaylist.Items.Clear();
-            foreach (var pl in _controller.PlaylistManager.Playlists)
-                listBoxPlaylist.Items.Add(pl.Name);
-            if (listBoxPlaylist.Items.Count > 0)
-                listBoxPlaylist.SelectedIndex = 0;
         }
 
         private void HighlightCurrentSong(int index)
@@ -308,7 +324,8 @@ namespace Proiect_IP_Barbati
             ClearSongHighlight();
             if (index >= 0 && index < listViewSongs.Items.Count)
             {
-                listViewSongs.Items[index].BackColor = Color.LightBlue;
+                listViewSongs.Items[index].BackColor = Color.FromArgb(80, 0, 80);
+                listViewSongs.Items[index].ForeColor = Color.White;
                 listViewSongs.Items[index].EnsureVisible();
             }
         }
@@ -316,7 +333,28 @@ namespace Proiect_IP_Barbati
         private void ClearSongHighlight()
         {
             foreach (ListViewItem item in listViewSongs.Items)
-                item.BackColor = SystemColors.Window;
+            {
+                item.BackColor = Color.FromArgb(25, 20, 20);
+                item.ForeColor = Color.White;
+            }
+        }
+
+        private void RefreshPlaylistBox()
+        {
+            // Curățăm lista existentă
+            listBoxPlaylist.Items.Clear();
+
+            // Luăm toate playlist-urile din manager și le adăugăm numele în listă
+            foreach (var pl in _controller.PlaylistManager.Playlists)
+            {
+                listBoxPlaylist.Items.Add(pl.Name);
+            }
+
+            // Dacă avem cel puțin un playlist, îl selectăm pe primul automat
+            if (listBoxPlaylist.Items.Count > 0)
+            {
+                listBoxPlaylist.SelectedIndex = 0;
+            }
         }
 
         // ── Meniu handlers ────────────────────────────────────────

@@ -4,9 +4,11 @@
 // Data:            2025
 // Functionalitate: Implementarea concreta a playerului audio
 //                  folosind libraria NAudio pentru redarea MP3.
+//                  Thread-safe: dispose se face pe thread-ul corect.
 // ============================================================
 
 using System;
+using System.Threading;
 using NAudio.Wave;
 
 namespace MP3Player.Core
@@ -21,109 +23,179 @@ namespace MP3Player.Core
         private WaveOutEvent _waveOut;
         private float _volume = 0.7f;
         private bool _disposed = false;
+        private bool _isStopping = false; // previne double-dispose
+
+        // ── Sincronizare thread ──────────────────────────────────
+        private readonly object _lock = new object();
 
         // ── Evenimente ──────────────────────────────────────────
         /// <summary>Se declanseaza cand melodia activa s-a terminat natural.</summary>
         public event EventHandler SongFinished;
 
         // ── Proprietati ──────────────────────────────────────────
-        public double CurrentPosition =>
-            _audioReader?.CurrentTime.TotalSeconds ?? 0;
+        public double CurrentPosition
+        {
+            get { lock (_lock) { return _audioReader?.CurrentTime.TotalSeconds ?? 0; } }
+        }
 
-        public double TotalDuration =>
-            _audioReader?.TotalTime.TotalSeconds ?? 0;
+        public double TotalDuration
+        {
+            get { lock (_lock) { return _audioReader?.TotalTime.TotalSeconds ?? 0; } }
+        }
 
-        public bool IsPlaying =>
-            _waveOut?.PlaybackState == PlaybackState.Playing;
+        public bool IsPlaying
+        {
+            get { lock (_lock) { return _waveOut?.PlaybackState == PlaybackState.Playing; } }
+        }
 
-        public bool IsPaused =>
-            _waveOut?.PlaybackState == PlaybackState.Paused;
+        public bool IsPaused
+        {
+            get { lock (_lock) { return _waveOut?.PlaybackState == PlaybackState.Paused; } }
+        }
 
         // ── Metode publice ───────────────────────────────────────
 
         /// <summary>
         /// Incarca fisierul de la filePath si incepe redarea.
         /// </summary>
-        /// <exception cref="ArgumentNullException">filePath este null sau gol.</exception>
-        /// <exception cref="System.IO.FileNotFoundException">Fisierul nu exista.</exception>
         public void Play(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentNullException(nameof(filePath), "Calea fisierului nu poate fi nula.");
+                throw new ArgumentNullException(nameof(filePath));
 
             if (!System.IO.File.Exists(filePath))
                 throw new System.IO.FileNotFoundException("Fisierul MP3 nu a fost gasit.", filePath);
 
-            DisposeWaveOut();
+            // Oprim ce era in redare INAINTE de a crea resurse noi
+            StopAndDispose();
 
-            _audioReader = new AudioFileReader(filePath) { Volume = _volume };
-            _waveOut = new WaveOutEvent();
-            _waveOut.Init(_audioReader);
-            _waveOut.PlaybackStopped += OnPlaybackStopped;
-            _waveOut.Play();
+            lock (_lock)
+            {
+                _isStopping = false;
+                _audioReader = new AudioFileReader(filePath) { Volume = _volume };
+                _waveOut = new WaveOutEvent();
+                _waveOut.Init(_audioReader);
+                _waveOut.PlaybackStopped += OnPlaybackStopped;
+                _waveOut.Play();
+            }
         }
 
         /// <summary>Pune redarea pe pauza.</summary>
         public void Pause()
         {
-            if (IsPlaying)
-                _waveOut.Pause();
+            lock (_lock)
+            {
+                if (_waveOut?.PlaybackState == PlaybackState.Playing)
+                    _waveOut.Pause();
+            }
         }
 
         /// <summary>Continua redarea dupa pauza.</summary>
         public void Resume()
         {
-            if (IsPaused)
-                _waveOut.Play();
+            lock (_lock)
+            {
+                if (_waveOut?.PlaybackState == PlaybackState.Paused)
+                    _waveOut.Play();
+            }
         }
 
         /// <summary>Opreste redarea si elibereaza resursele audio.</summary>
         public void Stop()
         {
-            DisposeWaveOut();
+            StopAndDispose();
         }
 
-        /// <summary>
-        /// Seteaza volumul.
-        /// </summary>
-        /// <param name="volume">Valoare intre 0.0 (mut) si 1.0 (maxim).</param>
+        /// <summary>Seteaza volumul intre 0.0 si 1.0.</summary>
         public void SetVolume(float volume)
         {
             _volume = Math.Max(0f, Math.Min(1f, volume));
-            if (_audioReader != null)
-                _audioReader.Volume = _volume;
+            lock (_lock)
+            {
+                if (_audioReader != null)
+                    _audioReader.Volume = _volume;
+            }
         }
 
-        /// <summary>
-        /// Sare la o pozitie in melodie.
-        /// </summary>
-        /// <param name="seconds">Pozitia in secunde.</param>
+        /// <summary>Sare la pozitia data in secunde.</summary>
         public void Seek(double seconds)
         {
-            if (_audioReader == null) return;
-            double clamped = Math.Max(0, Math.Min(seconds, TotalDuration));
-            _audioReader.CurrentTime = TimeSpan.FromSeconds(clamped);
+            lock (_lock)
+            {
+                if (_audioReader == null) return;
+                double clamped = Math.Max(0, Math.Min(seconds, TotalDuration));
+                _audioReader.CurrentTime = TimeSpan.FromSeconds(clamped);
+            }
         }
 
         // ── Metode private ───────────────────────────────────────
 
-        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
+        /// <summary>
+        /// Opreste si distruge resursele audio in mod sigur.
+        /// Apelata atat de Stop() cat si inainte de Play() nou.
+        /// </summary>
+        private void StopAndDispose()
         {
-            if (e.Exception != null)
-                throw e.Exception;
+            WaveOutEvent oldWaveOut;
+            AudioFileReader oldReader;
 
-            // Notificam UI-ul ca melodia s-a terminat
-            SongFinished?.Invoke(this, EventArgs.Empty);
+            lock (_lock)
+            {
+                if (_isStopping) return; // deja in proces de oprire
+                _isStopping = true;
+
+                oldWaveOut = _waveOut;
+                oldReader = _audioReader;
+                _waveOut = null;
+                _audioReader = null;
+            }
+
+            // Dispose AFARA din lock, pe thread-ul curent (nu pe cel audio)
+            if (oldWaveOut != null)
+            {
+                try
+                {
+                    // Deatasam evenimentul INAINTE de Stop pentru a evita
+                    // re-intrarea in OnPlaybackStopped
+                    oldWaveOut.PlaybackStopped -= OnPlaybackStopped;
+                    oldWaveOut.Stop();
+
+                    // Asteptam putin pentru ca thread-ul audio sa termine
+                    Thread.Sleep(50);
+
+                    oldWaveOut.Dispose();
+                }
+                catch { /* ignoram erorile la dispose */ }
+            }
+
+            if (oldReader != null)
+            {
+                try { oldReader.Dispose(); }
+                catch { }
+            }
         }
 
-        private void DisposeWaveOut()
+        /// <summary>
+        /// Callback de la NAudio cand redarea s-a oprit.
+        /// Ruleza pe thread-ul audio al NAudio - nu facem Dispose aici!
+        /// </summary>
+        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
         {
-            _waveOut?.Stop();
-            _waveOut?.Dispose();
-            _waveOut = null;
+            // Verificam daca oprirea a fost intentionata (Stop/Next/Prev)
+            // sau naturala (melodia s-a terminat)
+            bool wasStopping;
+            lock (_lock) { wasStopping = _isStopping; }
 
-            _audioReader?.Dispose();
-            _audioReader = null;
+            if (!wasStopping && e.Exception == null)
+            {
+                // Melodia s-a terminat natural - notificam pe un thread nou
+                // pentru a nu face dispose pe thread-ul audio NAudio
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    Thread.Sleep(100); // mic delay de siguranta
+                    SongFinished?.Invoke(this, EventArgs.Empty);
+                });
+            }
         }
 
         // ── IDisposable ──────────────────────────────────────────
@@ -131,7 +203,7 @@ namespace MP3Player.Core
         {
             if (!_disposed)
             {
-                DisposeWaveOut();
+                StopAndDispose();
                 _disposed = true;
             }
         }
