@@ -1,6 +1,0 @@
-D:\AC-3\Proiect_IP\MP3Player.Models\bin\Debug\MP3Player.Models.dll
-D:\AC-3\Proiect_IP\MP3Player.Models\bin\Debug\MP3Player.Models.pdb
-D:\AC-3\Proiect_IP\MP3Player.Models\obj\Debug\MP3Player.Models.csproj.AssemblyReference.cache
-D:\AC-3\Proiect_IP\MP3Player.Models\obj\Debug\MP3Player.Models.csproj.CoreCompileInputs.cache
-D:\AC-3\Proiect_IP\MP3Player.Models\obj\Debug\MP3Player.Models.dll
-D:\AC-3\Proiect_IP\MP3Player.Models\obj\Debug\MP3Player.Models.pdb

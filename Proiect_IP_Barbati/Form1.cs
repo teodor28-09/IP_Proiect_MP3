@@ -47,6 +47,13 @@ namespace Proiect_IP_Barbati
         // ── Initializare controale ────────────────────────────────
         private void SetupControls()
         {
+            listViewSongs.HeaderStyle = ColumnHeaderStyle.Nonclickable; // Sau setări de culori dacă e DataGridView
+            listViewSongs.FullRowSelect = true;
+            listViewSongs.OwnerDraw = false;
+            listBoxPlaylist.BorderStyle = BorderStyle.None;
+
+            menuStrip.BackColor = Color.FromArgb(25, 20, 20);
+            menuStrip.ForeColor = Color.White;
             // ListView melodii
             listViewSongs.View = View.Details;
             listViewSongs.FullRowSelect = true;
@@ -69,13 +76,13 @@ namespace Proiect_IP_Barbati
             trackBarVolum.Minimum = 0;
             trackBarVolum.Maximum = 100;
             trackBarVolum.Value = 70;
-            trackBarVolum.Scroll += (s, e) => _controller.SetVolume(trackBarVolum.Value);
+            trackBarVolum.ValueChanged += (s, e) => _controller.SetVolume(trackBarVolum.Value);
 
             // TrackBar progres
             trackBarSong.Minimum = 0;
             trackBarSong.Maximum = 100;
             trackBarSong.Value = 0;
-            trackBarSong.Scroll += (s, e) =>
+            trackBarSong.ValueChanged += (s, e) =>
                 _controller.Seek(trackBarSong.Value);
 
             // Butoane
@@ -248,6 +255,8 @@ namespace Proiect_IP_Barbati
             this.Text = song != null ? $"MP3 Player - {song.Title}" : "MP3 Player";
             HighlightCurrentSong(_controller.PlaylistManager.CurrentIndex);
             UpdatePlayButton();
+
+            textBoxMusicName.Text = song?.Title ?? "";
         }
 
         private void OnPlaylistChanged(object sender, EventArgs e)
