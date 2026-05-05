@@ -26,7 +26,6 @@ namespace MP3Player.Core
         [DataMember] public string FilePath { get; set; }
         [DataMember] public string Title { get; set; }
         [DataMember] public string Artist { get; set; }
-        [DataMember] public string Album { get; set; }
         [DataMember] public string Duration { get; set; }
     }
 
@@ -98,7 +97,6 @@ namespace MP3Player.Core
                             FilePath = s.FilePath,
                             Title = s.Title,
                             Artist = s.Artist,
-                            Album = s.Album,
                             Duration = s.Duration
                         });
                     }
@@ -175,7 +173,6 @@ namespace MP3Player.Core
                             songDto.FilePath,
                             songDto.Title ?? Path.GetFileNameWithoutExtension(songDto.FilePath),
                             songDto.Artist ?? "Necunoscut",
-                            songDto.Album ?? "Necunoscut",
                             songDto.Duration ?? "--:--");
 
                         playlist.AddSong(song);

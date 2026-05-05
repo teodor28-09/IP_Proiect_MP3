@@ -23,19 +23,17 @@ namespace MP3Player.Core
     /// </summary>
     public class PlaylistManager
     {
-        // ── Campuri private ──────────────────────────────────────
         private readonly List<Playlist> _playlists = new List<Playlist>();
         private Playlist _activePlaylist = null;
         private int _currentIndex = -1;
 
-        // ── Evenimente (Observer Pattern) ────────────────────────
+        // Evenimente (Observer Pattern) 
         /// <summary>Se declanseaza cand melodia activa s-a schimbat.</summary>
         public event EventHandler<Song> CurrentSongChanged;
 
         /// <summary>Se declanseaza cand continutul playlist-ului s-a modificat.</summary>
         public event EventHandler PlaylistChanged;
 
-        // ── Proprietati ──────────────────────────────────────────
         /// <summary>Melodia activa in acest moment.</summary>
         public Song CurrentSong =>
             _activePlaylist?.GetSong(_currentIndex);
@@ -49,16 +47,15 @@ namespace MP3Player.Core
         /// <summary>Lista tuturor playlist-urilor.</summary>
         public IReadOnlyList<Playlist> Playlists => _playlists.AsReadOnly();
 
-        // ── Constructor ──────────────────────────────────────────
+        /// <summary>
+        /// Constructorul initializeaza managerul de playlist-uri cu un playlist implicit gol.
+        /// </summary>
         public PlaylistManager()
         {
-            // Cream un playlist implicit
             var defaultPlaylist = new Playlist("Favorite");
             _playlists.Add(defaultPlaylist);
             _activePlaylist = defaultPlaylist;
         }
-
-        // ── Gestionare playlist-uri ──────────────────────────────
 
         /// <summary>Creeaza un playlist nou cu numele dat.</summary>
         /// <exception cref="ArgumentException">Numele este gol sau deja exista.</exception>
@@ -87,7 +84,6 @@ namespace MP3Player.Core
             return true;
         }
 
-        // ── Gestionare melodii ───────────────────────────────────
 
         /// <summary>
         /// Adauga un fisier MP3 in playlist-ul activ.
@@ -103,7 +99,6 @@ namespace MP3Player.Core
 
             string title = Path.GetFileNameWithoutExtension(filePath);
             string artist = "Necunoscut";
-            string album = "Necunoscut";
             string duration = "--:--";
 
             try
@@ -123,9 +118,6 @@ namespace MP3Player.Core
                     // FirstPerformer extrage primul artist găsit în listă
                     if (!string.IsNullOrWhiteSpace(tagFile.Tag.FirstPerformer))
                         artist = tagFile.Tag.FirstPerformer;
-
-                    if (!string.IsNullOrWhiteSpace(tagFile.Tag.Album))
-                        album = tagFile.Tag.Album;
                 }
             }
             catch
@@ -134,7 +126,7 @@ namespace MP3Player.Core
                 // funcția continuă cu valorile default setate mai sus.
             }
 
-            var song = new Song(filePath, title, artist, album, duration);
+            var song = new Song(filePath, title, artist, duration);
 
             _activePlaylist.AddSong(song);
 
@@ -195,25 +187,6 @@ namespace MP3Player.Core
                 ? _activePlaylist.Count - 1
                 : _currentIndex - 1;
             return SelectSong(prev);
-        }
-
-        // ── Cautare ──────────────────────────────────────────────
-
-        /// <summary>
-        /// Cauta melodii in playlist-ul activ dupa titlu sau artist.
-        /// </summary>
-        /// <param name="query">Textul de cautat (case-insensitive).</param>
-        /// <returns>Lista de melodii care corespund cautarii.</returns>
-        public List<Song> Search(string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                return _activePlaylist?.Songs ?? new List<Song>();
-
-            string q = query.ToLower();
-            return _activePlaylist?.Songs
-                .Where(s => s.Title.ToLower().Contains(q) ||
-                            s.Artist.ToLower().Contains(q))
-                .ToList() ?? new List<Song>();
         }
     }
 }

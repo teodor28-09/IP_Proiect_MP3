@@ -19,9 +19,6 @@ namespace MP3Player.Models
         /// <summary>Artistul melodiei (din tag ID3).</summary>
         public string Artist { get; set; }
 
-        /// <summary>Albumul melodiei (din tag ID3).</summary>
-        public string Album { get; set; }
-
         /// <summary>Durata melodiei formatata ca mm:ss.</summary>
         public string Duration { get; set; }
 
@@ -31,13 +28,11 @@ namespace MP3Player.Models
         /// <summary>
         /// Constructorul principal al unui obiect Song.
         /// </summary>
-        public Song(string filePath, string title, string artist = "Necunoscut",
-                    string album = "Necunoscut", string duration = "--:--")
+        public Song(string filePath, string title, string artist = "Necunoscut",string duration = "--:--")
         {
             FilePath = filePath;
             Title = title;
             Artist = artist;
-            Album = album;
             Duration = duration;
         }
 

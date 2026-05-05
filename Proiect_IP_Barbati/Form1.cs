@@ -394,6 +394,7 @@ namespace Proiect_IP_Barbati
                 "Nume playlist nou:", "Playlist nou",
                 "Playlist " + (_controller.PlaylistManager.Playlists.Count + 1));
 
+            //tratare separat cazul in care avem spatiu in loc de un nume valid
             if (string.IsNullOrWhiteSpace(name)) return;
 
             try
