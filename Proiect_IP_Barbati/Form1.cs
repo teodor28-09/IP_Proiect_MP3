@@ -24,6 +24,8 @@ namespace Proiect_IP_Barbati
         // ── Timer pentru bara de progres ─────────────────────────
         private Timer _progressTimer;
 
+        private PlaylistRepository _repository;
+
         // ── Constructor ──────────────────────────────────────────
         public Form1()
         {
@@ -32,6 +34,8 @@ namespace Proiect_IP_Barbati
             // Compunem dependentele aici (Composition Root)
             var audioPlayer = new AudioPlayer();
             var playlistManager = new PlaylistManager();
+
+            _repository = new PlaylistRepository();
             _controller = new PlayerController(audioPlayer, playlistManager);
 
             // Abonam UI-ul la evenimentele din Core (Observer)
@@ -41,7 +45,7 @@ namespace Proiect_IP_Barbati
             SetupControls();
             SetupTimer();
             SetupDragDrop();
-            RefreshPlaylistBox();
+            LoadLibrary();
         }
 
         // ── Initializare controale ────────────────────────────────
@@ -430,13 +434,51 @@ namespace Proiect_IP_Barbati
             }
         }
 
-        // ── Cleanup ───────────────────────────────────────────────
+        //cand se inchide aplicatia, salvam playlist-urile in JSON si eliberam resursele audio
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            try
+            {
+                _repository.Save(_controller.PlaylistManager);  // salveaza JSON
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nu s-au putut salva playlist-urile:\n" + ex.Message,
+                                "Avertisment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             _controller.Stop();
             (_controller.AudioPlayer as IDisposable)?.Dispose();
             _progressTimer?.Dispose();
             base.OnFormClosing(e);
+        }
+
+        /// ── Load library la start ─────────────────────────────────
+        private void LoadLibrary()
+        {
+            try
+            {
+                string activeName = _repository.Load(_controller.PlaylistManager);
+                RefreshPlaylistBox();
+
+                // Selectam playlist-ul care era activ la ultima inchidere
+                if (!string.IsNullOrEmpty(activeName))
+                {
+                    int idx = listBoxPlaylist.FindString(activeName);
+                    if (idx >= 0)
+                    {
+                        listBoxPlaylist.SelectedIndex = idx;
+                        _controller.PlaylistManager.SetActivePlaylist(activeName);
+                        RefreshSongList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nu s-au putut incarca playlist-urile:\n" + ex.Message,
+                                "Avertisment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RefreshPlaylistBox(); // continuam cu playlist gol
+            }
         }
     }
 }

@@ -18,14 +18,13 @@ namespace MP3Player.Core
     /// </summary>
     public class AudioPlayer : IAudioPlayer, IDisposable
     {
-        // ── Campuri private ──────────────────────────────────────
         private AudioFileReader _audioReader;
         private WaveOutEvent _waveOut;
         private float _volume = 0.7f;
         private bool _disposed = false;
         private bool _isStopping = false; // previne double-dispose
 
-        // ── Sincronizare thread ──────────────────────────────────
+        //thread de sincronizare pentru accesul la resursele audio
         private readonly object _lock = new object();
 
         // ── Evenimente ──────────────────────────────────────────

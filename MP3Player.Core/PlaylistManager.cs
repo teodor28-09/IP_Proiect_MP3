@@ -101,7 +101,6 @@ namespace MP3Player.Core
             if (Path.GetExtension(filePath).ToLower() != ".mp3")
                 throw new ArgumentException("Fisierul nu este in format MP3.");
 
-            // Valorile default (Fallback)
             string title = Path.GetFileNameWithoutExtension(filePath);
             string artist = "Necunoscut";
             string album = "Necunoscut";
@@ -109,16 +108,15 @@ namespace MP3Player.Core
 
             try
             {
-                // 1. Citim durata folosind NAudio
+                //citire durata
                 using (var reader = new AudioFileReader(filePath))
                 {
                     duration = reader.TotalTime.ToString(@"mm\:ss");
                 }
 
-                // 2. Extragem metadatele ID3 folosind TagLib#
+                //utilizam ID3 folosind TagLib#
                 using (var tagFile = TagLib.File.Create(filePath))
                 {
-                    // Folosim operatorul ?? pentru a păstra numele fișierului dacă titlul din ID3 e gol
                     if (!string.IsNullOrWhiteSpace(tagFile.Tag.Title))
                         title = tagFile.Tag.Title;
 
@@ -136,7 +134,6 @@ namespace MP3Player.Core
                 // funcția continuă cu valorile default setate mai sus.
             }
 
-            // Creăm obiectul Song cu datele extrase
             var song = new Song(filePath, title, artist, album, duration);
 
             _activePlaylist.AddSong(song);
