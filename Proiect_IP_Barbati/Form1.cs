@@ -492,5 +492,25 @@ namespace Proiect_IP_Barbati
             }
         }
 
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string helpFileName = "MP3_Player_Help.chm";
+
+            string helpPath = Path.Combine(System.Environment.CurrentDirectory, helpFileName);
+
+            if (File.Exists(helpPath))
+            {
+                Help.ShowHelp(this, helpPath);
+            }
+            else
+            {
+                MessageBox.Show(
+                    $"Fișierul de ajutor nu a putut fi deschis!\n",
+                    "Eroare Documentație Help",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+        }
     }
 }
