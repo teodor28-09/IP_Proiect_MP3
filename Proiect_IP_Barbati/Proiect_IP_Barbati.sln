@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP3Player.Models", "..\MP3P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP3Player.Core", "..\MP3Player.Core\MP3Player.Core.csproj", "{60C2FD3F-C502-4AA4-94D4-536A736DA6BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MP3Player.Tests", "..\MP3Player.Tests\MP3Player.Tests.csproj", "{2C8288C6-1AD3-464E-BEBD-FED98125068F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{60C2FD3F-C502-4AA4-94D4-536A736DA6BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60C2FD3F-C502-4AA4-94D4-536A736DA6BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60C2FD3F-C502-4AA4-94D4-536A736DA6BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8288C6-1AD3-464E-BEBD-FED98125068F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C8288C6-1AD3-464E-BEBD-FED98125068F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C8288C6-1AD3-464E-BEBD-FED98125068F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C8288C6-1AD3-464E-BEBD-FED98125068F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

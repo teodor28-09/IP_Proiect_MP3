@@ -1,12 +1,22 @@
-﻿// ============================================================
-// Fisier:          PlaylistRepository.cs
-// Autor:           Membru 3 - [Nume Prenume]
-// Data:            2025
-// Functionalitate: Salvarea si incarcarea playlist-urilor
-//                  intr-un fisier JSON pe disc.
-//                  Foloseste System.Runtime.Serialization (fara
-//                  dependente externe - merge pe .NET Framework 4.7.2)
-// ============================================================
+﻿/**************************************************************************
+ *                                                                        *
+ *  File:        PlaylistRepository.cs                                    *
+ *  Copyright:   (c) 2025-2026 Aparaschivei Teodor,                       *
+ *                  Munteanu Alin Constantin,                             *
+ *                  Marguta Dan Alexandru                                 *
+ *  E-mail:      teodor.aparaschivei@student.tuiasi.ro                    *
+ *               alin-constantin.munteanu@student.tuiasi.ro               *
+ *               dan-alexandru.marguta@student.tuiasi.ro                  *                        
+ *  Description: Salvarea si incarcarea playlist-urilor                   *
+ *                  intr-un fisier JSON pe disc.                          *
+ *                                                                        *
+ *  This code and information is provided "as is" without warranty of     *
+ *  any kind, either expressed or implied, including but not limited      *
+ *  to the implied warranties of merchantability or fitness for a         *
+ *  particular purpose. You are free to use this source code in your      *
+ *  applications as long as the original copyright notice is included.    *
+ *                                                                        *
+ **************************************************************************/
 
 using System;
 using System.Collections.Generic;

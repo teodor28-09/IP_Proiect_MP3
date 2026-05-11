@@ -1,10 +1,21 @@
-﻿// ============================================================
-// Fisier:          Song.cs
-// Autor:           Membru 1 - [Nume Prenume]
-// Data:            2025
-// Functionalitate: Modelul de date pentru o melodie MP3.
-//                  Contine proprietatile unui fisier audio.
-// ============================================================
+﻿/**************************************************************************
+ *                                                                        *
+ *  File:        Song.cs                                                  *
+ *  Copyright:   (c) 2025-2026 Aparaschivei Teodor,                       *
+ *                  Munteanu Alin Constantin,                             *
+ *                  Marguta Dan Alexandru                                 *
+ *  E-mail:      teodor.aparaschivei@student.tuiasi.ro                    *
+ *               alin-constantin.munteanu@student.tuiasi.ro               *
+ *               dan-alexandru.marguta@student.tuiasi.ro                  *                        
+ *  Description: contine proprietatile unui fisier audio                  *
+ *                                                                        *
+ *  This code and information is provided "as is" without warranty of     *
+ *  any kind, either expressed or implied, including but not limited      *
+ *  to the implied warranties of merchantability or fitness for a         *
+ *  particular purpose. You are free to use this source code in your      *
+ *  applications as long as the original copyright notice is included.    *
+ *                                                                        *
+ **************************************************************************/
 
 namespace MP3Player.Models
 {

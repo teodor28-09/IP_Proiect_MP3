@@ -1,11 +1,21 @@
-﻿// ============================================================
-// Fisier:          Form1.cs
-// Autor:           Membru 4 - [Nume Prenume]
-// Data:            2025
-// Functionalitate: Fereastra principala a aplicatiei MP3 Player.
-//                  UI-ul comunica exclusiv prin PlayerController.
-//                  Nu are dependente directe catre NAudio.
-// ============================================================
+﻿/**************************************************************************
+ *                                                                        *
+ *  File:        Form1.cs                                                 *
+ *  Copyright:   (c) 2025-2026 Aparaschivei Teodor,                       *
+ *                  Munteanu Alin Constantin,                             *
+ *                  Marguta Dan Alexandru                                 *
+ *  E-mail:      teodor.aparaschivei@student.tuiasi.ro                    *
+ *               alin-constantin.munteanu@student.tuiasi.ro               *
+ *               dan-alexandru.marguta@student.tuiasi.ro                  *                        
+ *  Description: UI si callback-uri pentru butoane                        *
+ *                                                                        *
+ *  This code and information is provided "as is" without warranty of     *
+ *  any kind, either expressed or implied, including but not limited      *
+ *  to the implied warranties of merchantability or fitness for a         *
+ *  particular purpose. You are free to use this source code in your      *
+ *  applications as long as the original copyright notice is included.    *
+ *                                                                        *
+ **************************************************************************/
 
 using System;
 using System.IO;

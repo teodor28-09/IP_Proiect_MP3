@@ -1,12 +1,23 @@
-﻿// ============================================================
-// Fisier:          PlayerController.cs
-// Autor:           Membru 3 - [Nume Prenume]
-// Data:            2025
-// Functionalitate: Implementeaza sablonul de proiectare Command
-//                  pentru operatiile playerului (Play, Pause,
-//                  Stop, Next, Previous). Decupleaza UI-ul de
-//                  logica audio.
-// ============================================================
+﻿/**************************************************************************
+ *                                                                        *
+ *  File:        PlaylistController.cs                                    *
+ *  Copyright:   (c) 2025-2026 Aparaschivei Teodor,                       *
+ *                  Munteanu Alin Constantin,                             *
+ *                  Marguta Dan Alexandru                                 *
+ *  E-mail:      teodor.aparaschivei@student.tuiasi.ro                    *
+ *               alin-constantin.munteanu@student.tuiasi.ro               *
+ *               dan-alexandru.marguta@student.tuiasi.ro                  *                        
+ *  Description: Implementeaza sablonul de proiectare Command             *
+ *                  pentru operatiile playerului                          *
+ *                                                                        *
+ *  This code and information is provided "as is" without warranty of     *
+ *  any kind, either expressed or implied, including but not limited      *
+ *  to the implied warranties of merchantability or fitness for a         *
+ *  particular purpose. You are free to use this source code in your      *
+ *  applications as long as the original copyright notice is included.    *
+ *                                                                        *
+ **************************************************************************/
+
 
 using System;
 using MP3Player.Models;
