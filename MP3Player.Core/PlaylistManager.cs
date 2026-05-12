@@ -116,7 +116,6 @@ namespace MP3Player.Core
 
             try
             {
-                //citire durata
                 using (var reader = new AudioFileReader(filePath))
                 {
                     duration = reader.TotalTime.ToString(@"mm\:ss");
@@ -169,8 +168,6 @@ namespace MP3Player.Core
             _currentIndex = -1;
             PlaylistChanged?.Invoke(this, EventArgs.Empty);
         }
-
-        // ── Navigatie ────────────────────────────────────────────
 
         /// <summary>Seteaza melodia activa dupa index si notifica observatorii.</summary>
         public Song SelectSong(int index)

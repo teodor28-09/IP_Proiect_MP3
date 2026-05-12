@@ -23,11 +23,7 @@ using System;
 using MP3Player.Models;
 
 namespace MP3Player.Core
-{
-    // ══════════════════════════════════════════════════════════
-    //  COMMAND PATTERN  –  Interfata de baza
-    // ══════════════════════════════════════════════════════════
-
+{ 
     /// <summary>
     /// Interfata Command - fiecare operatie a playerului
     /// este o comanda independenta si reversibila.
@@ -36,10 +32,6 @@ namespace MP3Player.Core
     {
         void Execute();
     }
-
-    // ══════════════════════════════════════════════════════════
-    //  Comenzi concrete
-    // ══════════════════════════════════════════════════════════
 
     /// <summary>Comanda Play - porneste sau reia redarea.</summary>
     public class PlayCommand : ICommand
@@ -124,9 +116,6 @@ namespace MP3Player.Core
         }
     }
 
-    // ══════════════════════════════════════════════════════════
-    //  Invoker - leaga butoanele de comenzi
-    // ══════════════════════════════════════════════════════════
 
     /// <summary>
     /// Invoker-ul din Command Pattern.

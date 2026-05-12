@@ -28,27 +28,22 @@ namespace Proiect_IP_Barbati
 {
     public partial class Form1 : Form
     {
-        // ── Dependente injectate ──────────────────────────────────
         private readonly PlayerController _controller;
-
-        // ── Timer pentru bara de progres ─────────────────────────
+        //timer bara progres
         private Timer _progressTimer;
 
         private PlaylistRepository _repository;
-
-        // ── Constructor ──────────────────────────────────────────
         public Form1()
         {
             InitializeComponent();
 
-            // Compunem dependentele aici (Composition Root)
             var audioPlayer = new AudioPlayer();
             var playlistManager = new PlaylistManager();
 
             _repository = new PlaylistRepository();
             _controller = new PlayerController(audioPlayer, playlistManager);
 
-            // Abonam UI-ul la evenimentele din Core (Observer)
+            // Abonam UI-ul la evenimentele din Core 
             _controller.PlaylistManager.CurrentSongChanged += OnCurrentSongChanged;
             _controller.PlaylistManager.PlaylistChanged += OnPlaylistChanged;
 
@@ -57,8 +52,6 @@ namespace Proiect_IP_Barbati
             SetupDragDrop();
             LoadLibrary();
         }
-
-        // ── Initializare controale ────────────────────────────────
         private void SetupControls()
         {
 
@@ -185,8 +178,6 @@ namespace Proiect_IP_Barbati
                 }
             };
         }
-
-        // ── Logica butoane ────────────────────────────────────────
         private void OnPlayPauseClicked()
         {
             try
@@ -248,7 +239,7 @@ namespace Proiect_IP_Barbati
             buttonPlay.Text = _controller.AudioPlayer.IsPlaying ? "Pause" : "Play";
         }
 
-        // ── Actualizare UI ────────────────────────────────────────
+        //actualizare UI
         private void UpdateProgressBar()
         {
             if (!_controller.AudioPlayer.IsPlaying) return;
@@ -264,7 +255,7 @@ namespace Proiect_IP_Barbati
             }
         }
 
-        // ── Observer callbacks ────────────────────────────────────
+        // Observer callback pentru schimbarea melodiei curente
         private void OnCurrentSongChanged(object sender, Song song)
         {
             // Evenimentul poate veni din alt thread
@@ -283,8 +274,6 @@ namespace Proiect_IP_Barbati
             RefreshSongList();
         }
 
-        // ── Refresh lista melodii ─────────────────────────────────
-
         private void AddSongToUI(Song song)
         {
             if (song == null) return;
@@ -294,13 +283,10 @@ namespace Proiect_IP_Barbati
             item.SubItems.Add(song.Title);
             item.SubItems.Add(song.Artist ?? "Necunoscut");
             item.SubItems.Add(song.Duration);
-
-            // Setăm culorile explicit pe rând
             item.BackColor = Color.FromArgb(25, 20, 20);
             item.ForeColor = Color.White;
             item.UseItemStyleForSubItems = true;
 
-            // Forțăm fiecare sub-element să aibă aceeași culoare (uneori UseItemStyle e ignorat)
             foreach (ListViewItem.ListViewSubItem sub in item.SubItems)
             {
                 sub.BackColor = Color.FromArgb(25, 20, 20);
@@ -324,7 +310,6 @@ namespace Proiect_IP_Barbati
                 item.SubItems.Add(song.Artist ?? "Necunoscut");
                 item.SubItems.Add(song.Duration);
 
-                // stilizare
                 item.BackColor = Color.FromArgb(25, 20, 20);
                 item.ForeColor = Color.White;
                 item.UseItemStyleForSubItems = true;
@@ -464,7 +449,7 @@ namespace Proiect_IP_Barbati
             base.OnFormClosing(e);
         }
 
-        /// ── Load library la start ─────────────────────────────────
+        //load library la start
         private void LoadLibrary()
         {
             try
